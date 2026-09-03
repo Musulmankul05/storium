@@ -1,5 +1,3 @@
-from datetime import timedelta
-
 from fastapi import APIRouter, Depends, HTTPException, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql import select
@@ -12,8 +10,8 @@ from schemas.users import (
     UserRegistrationSchema,
     UserResponseSchema,
 )
-from utils.auths import auth
-from utils.encryptions import hash_pwd, verify_pwd
+from services.auths import auth
+from services.encryptions import hash_pwd, verify_pwd
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -54,7 +52,8 @@ async def login_user(
     response.set_cookie("access_token", token)
     return {"access_token": token}
 
+
 @router.post("/logout")
 async def logout_user(response: Response):
     response.delete_cookie("access_token")
-    return {'msg': 'logout success'}
+    return {"msg": "logout success"}
