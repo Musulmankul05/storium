@@ -1,11 +1,12 @@
 import uvicorn
 from fastapi import FastAPI
 
-from routers import users
+from routers import objects, users
 
-MASTER_PREFIX = '/api/v1'
+MASTER_PREFIX = "/api/v1"
 app = FastAPI()
 app.include_router(users.router, prefix=MASTER_PREFIX)
+app.include_router(objects.router, prefix=MASTER_PREFIX)
 
 
 @app.get("/")
