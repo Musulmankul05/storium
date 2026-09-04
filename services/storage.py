@@ -11,7 +11,29 @@ from models.objects import BucketModel, ObjectModel
 
 class StorageService:
     """
-    StorageService class
+    **This class contains async methods to work with buckets and objects.**
+
+    # **Args**:
+        db: Takes ORM session dependency
+        storage_dir: Main storage for buckets/objects. "./static/storage" by default
+
+    # **Methods**:
+        create_bucket: Creates bucket. Excepts when caused race-condition by unique name
+        del_bucket: Deletes bucket if its empty. Used for DELETE HTTP-Method
+        get_user_buckets: Gets list of current users buckets
+        put_object: Uploads file by dividing to chunks first, then save combined hashed file
+        get_object: Gets object by key and bucket name
+        del_object: Deletes object bt key and bucket name
+
+    # **Example:**
+    ```python
+        ...
+        storage = StorageService(db)
+        try:
+            return await storage.create_bucket(payload.name, user_id=current_user.id)
+        except ValueError as e:
+            raise HTTPException(409, str(e))
+    ```
     """
 
     def __init__(self, db: AsyncSession, storage_dir: str = "./static/storage"):
