@@ -175,3 +175,16 @@ class StorageService:
             file_path = os.path.join(self.storage_dir, target_etag)
             if os.path.exists(file_path):
                 os.remove(file_path)
+
+    async def get_bucket_objects(self, bucket_name, user_id, limit, offset, prefix):
+        res = await self.db.execute(select(BucketModel).where(BucketModel.owner_id == user_id, BucketModel.name == bucket_name))
+        bucket = res.scalar_one_or_none()
+        if bucket is None:
+            raise ValueError("bucket not found")
+        query = select(ObjectModel).where(ObjectModel.bucket_id == bucket.id)
+        if prefix:
+            query = query.where(ObjectModel.key.startswith(prefix))
+        query = query.offset(offset).limit(limit)
+        objects_res = await self.db.execute(query)
+        objects = objects_res.scalars().all()
+        return objects 
